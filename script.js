@@ -10,10 +10,10 @@ const CARD_VALUE_MAP = {
   "8": 8,
   "9": 9,
   "10": 10,
-  "J": 11,
-  "Q": 12,
-  "K": 13,
-  "A": 1,
+  "J": 10,
+  "Q": 10,
+  "K": 10,
+  "A": 11,
 }
 
 
@@ -25,6 +25,8 @@ const computerCardTwo = document.querySelector('.computer-card-two');
 const playerSideElement = document.querySelector('.playerSide');
 const playerBetElement = document.querySelector('.player-bet');
 const playerHitElement = document.querySelector('.player-hit');
+const textUpdate = document.querySelector('.text');
+const tableContainer = document.querySelector('.container');
 
 const hitCardElement = document.createElement('div');
 
@@ -34,6 +36,7 @@ let randomCardPlayerOne, randomCardPlayerTwo, randomCardComputerOne, randomCardC
 playerBetElement.addEventListener('click', () => {
   dealStartingCards();
   startHitting = true;
+
 }, { once: true });
 
 playerHitElement.addEventListener('click', () => {
@@ -67,6 +70,12 @@ function dealStartingCards() {
   computerCardOne.appendChild(randomCardComputerOne.getHTML());
   computerCardTwo.appendChild(randomCardComputerTwo.getHTML());
 
+  if (isBlackJack(randomCardPlayerOne, randomCardPlayerTwo)) {
+    textUpdate.innerText = 'You Win! BlackJack!';
+    tableContainer.appendChild(textUpdate);
+    startHitting = false;
+  }
+
 }
 
 
@@ -77,6 +86,10 @@ function playerHit() {
   showHitCard.classList.add('card-hit');
   playerSideElement.appendChild(showHitCard)
 
+}
+
+function isBlackJack(cardOne, cardTwo) {
+  return (CARD_VALUE_MAP[cardOne.value] + CARD_VALUE_MAP[cardTwo.value]) === 21;
 }
 
 

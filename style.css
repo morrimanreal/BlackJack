@@ -43,7 +43,7 @@ h1 {
   justify-content: space-around;
   text-align: center;
   /* background-color: #333; */
-  width: 30rem;
+  width: 25rem;
 }
 
 
@@ -80,16 +80,16 @@ h1 {
 }
 
 .player-start {
-  grid-column: span 2;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 1px solid black;
   border-radius: 50%;
   height: 50px;
+  width: 50px;
   margin-top: 10px;
-  font-size: 2rem;
-  /* width: 5rem; */
+  font-size: 1.5rem;
+  width: 7rem;
   background-color: #fff;
 }
 
@@ -131,8 +131,8 @@ h1 {
 .card-hit {
   background-color: #fff;
   position: relative;
-  height: 7rem;
-  width: 4.5rem;
+  height: 6rem;
+  width: 3.5rem;
   border: 1px solid black;
   border-radius: .5rem;
   display: flex;
