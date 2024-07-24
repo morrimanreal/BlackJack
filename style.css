@@ -15,11 +15,11 @@ h1 {
 }
 
 .container {
-  background-color: hsl(166, 99%, 30%);
+  background-color: hwb(166 0% 40%);
   display: grid;
-  grid-template-columns: repeat(2, 4rem);
-  grid-template-rows: 2rem 7rem 2rem 7rem 2rem 2rem;
-  gap: .5rem;
+  /* grid-template-columns: repeat(2, 4rem); */
+  /* grid-template-rows: 2rem 7rem 2rem 7rem 2rem 2rem; */
+  /* gap: .5rem; */
   cursor: pointer;
   justify-content: center;
   padding-top: 1rem;
@@ -27,20 +27,25 @@ h1 {
   border-radius: 5% 5% 50% 50%;
 }
 
-
-.card {
-  background-color: #fff;
-  height: 100%;
-  width: 100%;
-  border: 1px solid black;
+.computerSide {
   display: flex;
   justify-content: center;
-  align-items: center;
-  font-size: 3rem;
-  border-radius: .5rem;
-  color: white;
-  user-select: none;
 }
+
+.playerSide {
+  display: flex;
+  justify-content: center;
+  /* background-color: aqua; */
+}
+
+.playerMoveContainer {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  /* background-color: #333; */
+  width: 30rem;
+}
+
 
 .computer-card-two {
   background-color: purple;
@@ -50,7 +55,15 @@ h1 {
   background-color: blue;
 }
 
+.player-move {
+  padding: 10px;
+  width: 4rem;
+  height: 2rem;
+}
+
 .text {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   font-weight: bold;
   grid-column: span 2;
   display: flex;
@@ -88,10 +101,25 @@ h1 {
   background-color: red;
 }
 
+
 .card {
+  background-color: #fff;
   position: relative;
-  height: 100%;
-  width: 100%;
+  height: 8rem;
+  width: 5.5rem;
+  border: 1px solid black;
+  border-radius: .5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+}
+
+.card-hit {
+  background-color: #fff;
+  position: relative;
+  height: 6rem;
+  width: 3.5rem;
   border: 1px solid black;
   border-radius: .5rem;
   display: flex;

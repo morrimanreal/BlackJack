@@ -22,15 +22,29 @@ const playerCardTwo = document.querySelector('.player-card-two');
 const computerCardOne = document.querySelector('.computer-card-one');
 const computerCardTwo = document.querySelector('.computer-card-two');
 
+const playerSideElement = document.querySelector('.playerSide');
+const playerBetElement = document.querySelector('.player-bet');
+const playerHitElement = document.querySelector('.player-hit');
+
+const hitCardElement = document.createElement('div');
+
 let randomCardPlayerOne, randomCardPlayerTwo, randomCardComputerOne, randomCardComputerTwo, deck;
+
+
+playerBetElement.addEventListener('click', () => {
+  dealStartingCards();
+
+}, { once: true });
+
+playerHitElement.addEventListener('click', () => {
+  playerHit();
+})
 
 startGame();
 function startGame() {
   deck = new Deck();
   deck.shuffle();
 
-
-  dealStartingCards();
 }
 
 function dealStartingCards() {
@@ -40,19 +54,20 @@ function dealStartingCards() {
   randomCardComputerOne = deck.pop();
   randomCardComputerTwo = deck.pop();
 
-  console.log(deck)
-  console.log(randomCardPlayerOne)
-  console.log(randomCardPlayerTwo)
-  console.log(randomCardComputerOne)
-  console.log(randomCardComputerTwo)
-
   playerCardOne.appendChild(randomCardPlayerOne.getHTML());
   playerCardTwo.appendChild(randomCardPlayerTwo.getHTML());
   computerCardOne.appendChild(randomCardComputerOne.getHTML());
+  computerCardTwo.appendChild(randomCardComputerTwo.getHTML());
+
 }
 
 
 function playerHit() {
+  const hitCard = deck.pop();
+
+  const showHitCard = hitCardElement.appendChild(hitCard.getHTML())
+  showHitCard.classList.add('card-hit');
+  playerSideElement.appendChild(showHitCard)
 
 }
 
