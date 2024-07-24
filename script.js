@@ -13,7 +13,7 @@ const CARD_VALUE_MAP = {
   "J": 10,
   "Q": 10,
   "K": 10,
-  "A": 11,
+  "A": 11
 }
 
 
@@ -23,28 +23,23 @@ const computerCardOne = document.querySelector('.computer-card-one');
 const computerCardTwo = document.querySelector('.computer-card-two');
 
 const playerSideElement = document.querySelector('.playerSide');
-const playerBetElement = document.querySelector('.player-bet');
-const playerHitElement = document.querySelector('.player-hit');
-const textUpdate = document.querySelector('.text');
+const playerBetButton = document.querySelector('.player-start-btn');
+const playerHitButton = document.querySelector('.player-hit-btn');
+const textUpdate = document.querySelector('.text-update');
 const tableContainer = document.querySelector('.container');
 
 const hitCardElement = document.createElement('div');
 
-let randomCardPlayerOne, randomCardPlayerTwo, randomCardComputerOne, randomCardComputerTwo, deck, startHitting;
+let randomCardPlayerOne, randomCardPlayerTwo, randomCardComputerOne, randomCardComputerTwo, deck, startHitting, hitCard, total, newTotal;
 
 
-playerBetElement.addEventListener('click', () => {
-  dealStartingCards();
+playerBetButton.addEventListener('click', () => {
+  dealCards();
   startHitting = true;
 
 }, { once: true });
 
-playerHitElement.addEventListener('click', () => {
-  if (startHitting) {
-    playerHit();
-  }
 
-})
 
 startGame();
 function startGame() {
@@ -58,7 +53,7 @@ function startGame() {
 
 }
 
-function dealStartingCards() {
+function dealCards() {
 
   randomCardPlayerOne = deck.pop();
   randomCardPlayerTwo = deck.pop();
@@ -73,14 +68,47 @@ function dealStartingCards() {
   if (isBlackJack(randomCardPlayerOne, randomCardPlayerTwo)) {
     textUpdate.innerText = 'You Win! BlackJack!';
     tableContainer.appendChild(textUpdate);
-    startHitting = false;
+
+  } else {
+    let total = (addStartingCards(randomCardPlayerOne, randomCardPlayerTwo));
+    textUpdate.innerText = `You have: ${total}`;
+    tableContainer.appendChild(textUpdate);
+
+    playerHitButton.addEventListener('click', () => {
+      if (startHitting) {
+        playerHit();
+        console.log(total)
+        console.log(hitCard.value)
+        let newTotal = (Number(total) + Number(CARD_VALUE_MAP[hitCard.value]));
+        console.log(newTotal);
+
+        textUpdate.innerText = `You now have: ${newTotal}`;
+        tableContainer.appendChild(textUpdate);
+
+        if (newTotal <= 21) {
+          let addedTotal = (Number(newTotal) + Number(CARD_VALUE_MAP[hitCard.value]));
+          console.log(addedTotal);
+          // textUpdate.innerText = `You now have: ${addedTotal}`;
+          // tableContainer.appendChild(textUpdate);
+
+
+        } else {
+          console.log('BUST');
+          textUpdate.innerText = `You BUST!`;
+          tableContainer.appendChild(textUpdate);
+        }
+      }
+
+    })
   }
+
+
 
 }
 
 
 function playerHit() {
-  const hitCard = deck.pop();
+  hitCard = deck.pop();
 
   const showHitCard = hitCardElement.appendChild(hitCard.getHTML())
   showHitCard.classList.add('card-hit');
@@ -92,9 +120,16 @@ function isBlackJack(cardOne, cardTwo) {
   return (CARD_VALUE_MAP[cardOne.value] + CARD_VALUE_MAP[cardTwo.value]) === 21;
 }
 
+function addStartingCards(cardOne, cardTwo) {
+  return (CARD_VALUE_MAP[cardOne.value] + CARD_VALUE_MAP[cardTwo.value]);
+}
 
+function addHitCard(firstTwoTotal, hitNum) {
+  return (CARD_VALUE_MAP[firstTwoTotal.value] + CARD_VALUE_MAP[hitNum.value]);
+}
 
-
+const playerCardArray = [randomCardPlayerOne, randomCardPlayerTwo, hitCard];
+console.log(playerCardArray);
 
 
 
