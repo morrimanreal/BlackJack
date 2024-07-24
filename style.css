@@ -6,24 +6,30 @@
 
 body {
   margin: 0;
+  background-color: #333;
 }
 
 h1 {
   text-align: center;
+  color: #fff;
 }
 
 .container {
+  background-color: hsl(166, 99%, 30%);
   display: grid;
   grid-template-columns: repeat(2, 4rem);
-  grid-template-rows: 7rem 2rem 7rem;
+  grid-template-rows: 2rem 7rem 2rem 7rem 2rem 2rem;
   gap: .5rem;
   cursor: pointer;
   justify-content: center;
   padding-top: 1rem;
+  padding-bottom: 2rem;
+  border-radius: 5% 5% 50% 50%;
 }
 
 
-.deck {
+.card {
+  background-color: #fff;
   height: 100%;
   width: 100%;
   border: 1px solid black;
@@ -36,8 +42,8 @@ h1 {
   user-select: none;
 }
 
-.computer-deck {
-  background-color: green;
+.computer-card-two {
+  background-color: purple;
 }
 
 .player-deck {
@@ -45,10 +51,41 @@ h1 {
 }
 
 .text {
+  font-weight: bold;
   grid-column: span 2;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.player-move {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px solid black;
+  background-color: #fff;
+}
+
+.player-start {
+  grid-column: span 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 50%;
+  height: 50px;
+  margin-top: 10px;
+  font-size: 2rem;
+  /* width: 5rem; */
+  background-color: #fff;
+}
+
+.player-move:hover {
+  background-color: grey;
+}
+
+.player-start:hover {
+  background-color: red;
 }
 
 .card {
