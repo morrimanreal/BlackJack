@@ -28,22 +28,30 @@ const playerHitElement = document.querySelector('.player-hit');
 
 const hitCardElement = document.createElement('div');
 
-let randomCardPlayerOne, randomCardPlayerTwo, randomCardComputerOne, randomCardComputerTwo, deck;
+let randomCardPlayerOne, randomCardPlayerTwo, randomCardComputerOne, randomCardComputerTwo, deck, startHitting;
 
 
 playerBetElement.addEventListener('click', () => {
   dealStartingCards();
-
+  startHitting = true;
 }, { once: true });
 
 playerHitElement.addEventListener('click', () => {
-  playerHit();
+  if (startHitting) {
+    playerHit();
+  }
+
 })
 
 startGame();
 function startGame() {
   deck = new Deck();
   deck.shuffle();
+
+  playerCardOne.classList.add('card-hide');
+  playerCardTwo.classList.add('card-hide');
+  computerCardOne.classList.add('card-hide');
+  computerCardTwo.classList.add('card-hide');
 
 }
 

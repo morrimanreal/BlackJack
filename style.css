@@ -115,11 +115,24 @@ h1 {
   font-size: 4rem;
 }
 
+.card-hide {
+  background-color: hwb(165 18% 27%);
+  position: relative;
+  height: 8rem;
+  width: 5.5rem;
+  border: 1px solid black;
+  border-radius: .5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+}
+
 .card-hit {
   background-color: #fff;
   position: relative;
-  height: 6rem;
-  width: 3.5rem;
+  height: 7rem;
+  width: 4.5rem;
   border: 1px solid black;
   border-radius: .5rem;
   display: flex;
