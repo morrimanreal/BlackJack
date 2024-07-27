@@ -1,6 +1,6 @@
 import Deck from './deck.js'
 
-const CARD_VALUE_MAP = {
+let CARD_VALUE_MAP = {
   "2": 2,
   "3": 3,
   "4": 4,
@@ -13,7 +13,7 @@ const CARD_VALUE_MAP = {
   "J": 10,
   "Q": 10,
   "K": 10,
-  "A": 11
+  "A": 1
 }
 
 
@@ -35,8 +35,6 @@ let randomCardPlayerOne, randomCardPlayerTwo, randomCardComputerOne, randomCardC
 
 playerBetButton.addEventListener('click', () => {
   dealCards();
-  startHitting = true;
-
 }, { once: true });
 
 
@@ -65,42 +63,61 @@ function dealCards() {
   computerCardOne.appendChild(randomCardComputerOne.getHTML());
   computerCardTwo.appendChild(randomCardComputerTwo.getHTML());
 
-  if (isBlackJack(randomCardPlayerOne, randomCardPlayerTwo)) {
-    textUpdate.innerText = 'You Win! BlackJack!';
-    tableContainer.appendChild(textUpdate);
+  let playerHand = [];
 
-  } else {
-    let total = (addStartingCards(randomCardPlayerOne, randomCardPlayerTwo));
-    textUpdate.innerText = `You have: ${total}`;
-    tableContainer.appendChild(textUpdate);
+  playerHand.push(randomCardPlayerOne.value);
+  playerHand.push(randomCardPlayerTwo.value);
 
-    playerHitButton.addEventListener('click', () => {
-      if (startHitting) {
+  let firstTwoTotal = CARD_VALUE_MAP[randomCardPlayerOne.value] + CARD_VALUE_MAP[randomCardPlayerTwo.value];
+  console.log(firstTwoTotal);
+
+  const isAcePresent = (value) => value === 'A';
+
+  if (playerHand.some(isAcePresent)) {
+    console.log("Ace is Present")
+    const totalWithAce = playerHand.reduce((total, item) => {
+      return total + (CARD_VALUE_MAP[item])
+    }, 0)
+
+    if (totalWithAce === 11) {
+      console.log('BlackJack');
+    } else if (totalWithAce < 12) {
+      let newTotalWithAce = totalWithAce + 10;
+      console.log(newTotalWithAce);
+
+      playerHitButton.addEventListener('click', () => {
         playerHit();
-        console.log(total)
-        console.log(hitCard.value)
-        let newTotal = (Number(total) + Number(CARD_VALUE_MAP[hitCard.value]));
-        console.log(newTotal);
-
-        textUpdate.innerText = `You now have: ${newTotal}`;
-        tableContainer.appendChild(textUpdate);
-
-        if (newTotal <= 21) {
-          let addedTotal = (Number(newTotal) + Number(CARD_VALUE_MAP[hitCard.value]));
-          console.log(addedTotal);
-          // textUpdate.innerText = `You now have: ${addedTotal}`;
-          // tableContainer.appendChild(textUpdate);
+        playerHand.push(hitCard.value);
+        console.log(playerHand)
 
 
-        } else {
-          console.log('BUST');
-          textUpdate.innerText = `You BUST!`;
-          tableContainer.appendChild(textUpdate);
-        }
-      }
+
+        const totalPlayerHand = playerHand.reduce((total, item) => {
+          return total + (CARD_VALUE_MAP[item])
+        }, 0)
+
+        console.log(totalPlayerHand);
+
+      })
+    }
+  } else {
+    playerHitButton.addEventListener('click', () => {
+      playerHit();
+      playerHand.push(hitCard.value);
+      console.log(playerHand)
+
+
+
+      const totalPlayerHand = playerHand.reduce((total, item) => {
+        return total + (CARD_VALUE_MAP[item])
+      }, 0)
+
+      console.log(totalPlayerHand);
 
     })
+
   }
+
 
 
 
@@ -115,21 +132,6 @@ function playerHit() {
   playerSideElement.appendChild(showHitCard)
 
 }
-
-function isBlackJack(cardOne, cardTwo) {
-  return (CARD_VALUE_MAP[cardOne.value] + CARD_VALUE_MAP[cardTwo.value]) === 21;
-}
-
-function addStartingCards(cardOne, cardTwo) {
-  return (CARD_VALUE_MAP[cardOne.value] + CARD_VALUE_MAP[cardTwo.value]);
-}
-
-function addHitCard(firstTwoTotal, hitNum) {
-  return (CARD_VALUE_MAP[firstTwoTotal.value] + CARD_VALUE_MAP[hitNum.value]);
-}
-
-const playerCardArray = [randomCardPlayerOne, randomCardPlayerTwo, hitCard];
-console.log(playerCardArray);
 
 
 
