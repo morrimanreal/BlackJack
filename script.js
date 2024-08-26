@@ -58,6 +58,7 @@ function newGame() {
   deck = new Deck();
   deck.shuffle();
 
+  /* This is just the look of the back of the card that shows at the beginning of the game, can be changed in css for a nicer look */
   playerCardOne.classList.add('card-hide');
   playerCardTwo.classList.add('card-hide');
   computerCardOne.classList.add('card-hide');
@@ -75,19 +76,11 @@ function startGame() {
 function dealCards() {
   playerHitButton.style.removeProperty("visibility");
   playerStandButton.style.removeProperty("visibility");
-  randomCardPlayerOne = deck.pop();
-  randomCardPlayerTwo = deck.pop();
-  randomCardComputerOne = deck.pop();
-  randomCardComputerTwo = deck.pop();
 
-  playerCardOne.appendChild(randomCardPlayerOne.getHTML());
-  playerCardTwo.appendChild(randomCardPlayerTwo.getHTML());
-  computerCardOne.appendChild(randomCardComputerOne.getHTML());
-
+  randomCardPoppedAndAppended();
 
   playerHand = [];
   computerHand = [];
-
 
   playerHand.push(randomCardPlayerOne.value);
   playerHand.push(randomCardPlayerTwo.value);
@@ -98,12 +91,10 @@ function dealCards() {
   playerHitButton.addEventListener('click', playerHit);
   playerStandButton.addEventListener('click', playerStand);
 
-
-
-
-
 }
 
+
+/* GAME MATH STUFF FUNCTIONS */
 
 function addFirstTwoPlayerCards() {
   firstTwoTotal = CARD_VALUE_MAP[randomCardPlayerOne.value] + CARD_VALUE_MAP[randomCardPlayerTwo.value];
@@ -112,83 +103,120 @@ function addFirstTwoPlayerCards() {
 
 function addFirstTwoComputerCards() {
   firstTwoComputerTotal = CARD_VALUE_MAP[randomCardComputerOne.value] + CARD_VALUE_MAP[randomCardComputerTwo.value];
-  computerCardTwo.appendChild(randomCardComputerTwo.getHTML());
-  console.log(firstTwoComputerTotal);
+  console.log(`${firstTwoComputerTotal} firstTwoComputerTotal`);
+
 }
 
 function compTotalHand() {
   totalComputerHand = computerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
-
-  console.log(totalComputerHand);
+  console.log(`${totalComputerHand} totalComputerHand --- compTotalHand function`);
 }
 
-function computerHit() {
-  if (firstTwoComputerTotal < 21) {
-    computerHitCard();
-  } else {
-    console.log("DEALER BUST!")
+function checkIfDealerBust(total) {
+  if (totalComputerHand <= 21) {
+    console.log(`totalComputerHand ${totalComputerHand} is less than 21`)
+    console.log(`${total}`);
+    compareTotal();
+
+  } else if (totalComputerHand > 21) {
+    console.log(`DEALER BUST! compareTotal function ran ${totalComputerHand}`)
+    gameOver();
   }
+
 }
 
+function compareTotal() {
+  if (totalComputerHand === totalPlayerHand) {
+    console.log(`TIE!`)
+  } else if (totalComputerHand > totalPlayerHand) {
+    console.log(`LOSE!`)
+  } else if (totalComputerHand > totalPlayerHand) {
+    console.log('WIN!')
+  }
+  gameOver();
+}
+
+
+/* PLAYER MOVES FUNCTIONS */
 
 function playerHit() {
   playerHitCard();
-
   totalPlayerHand = playerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
-
   console.log(`${totalPlayerHand} : totalPlayerHand`);
-
   if (totalPlayerHand > 21) {
     console.log("BUST");
     gameOver();
     playerHitButton.style.visibility = "hidden";
     playerStandButton.style.visibility = "hidden";
   }
-
 }
 
 function playerStand() {
   playerHitButton.style.visibility = "hidden";
+  playerStandButton.style.visibility = "hidden";
   addFirstTwoComputerCards();
-  computerHit();
-  compTotalHand();
+  if (firstTwoComputerTotal >= 17) {
+    totalComputerHand = firstTwoComputerTotal;
+    console.log(`checking if total >=17 ran and output ${totalComputerHand} ${totalPlayerHand}`);
+    checkIfDealerBust();
+  } else {
+    computerHitCard();
+  }
 }
+
+
+/* NEW CARDS HIT/POPPED FUNCTIONS */
 
 function playerHitCard() {
   hitCard = deck.pop();
-
   playerHand.push(hitCard.value);
   console.log(playerHand)
-
   showHitCard = hitCardElement.appendChild(hitCard.getHTML())
   showHitCard.classList.add('card-hit');
   playerSideElement.appendChild(showHitCard);
 }
 
 function computerHitCard() {
-  computerCard = deck.pop();
+  let i = firstTwoComputerTotal;
 
-  computerHand.push(computerCard.value);
-  console.log(computerHand)
+  while (i < 17) {
+    computerCard = deck.pop();
+    computerHand.push(computerCard.value);
+    showComputerHitCard = computerHitCardElement.appendChild(computerCard.getHTML());
+    showComputerHitCard.classList.add('card-hit');
+    computerSideElement.appendChild(showComputerHitCard);
+    compTotalHand();
+    i = totalComputerHand;
+    console.log(`${computerHand} = ${i} computerHitCard function ran`);
+  }
+  checkIfDealerBust();
+}
 
-  showComputerHitCard = computerHitCardElement.appendChild(computerCard.getHTML())
-  showComputerHitCard.classList.add('card-hit');
-  computerSideElement.appendChild(showComputerHitCard)
+
+/* GAME UPDATES FUNCTIONS */
+
+function randomCardPoppedAndAppended() {
+  randomCardPlayerOne = deck.pop();
+  randomCardPlayerTwo = deck.pop();
+  randomCardComputerOne = deck.pop();
+  randomCardComputerTwo = deck.pop();
+
+  playerCardOne.appendChild(randomCardPlayerOne.getHTML());
+  playerCardTwo.appendChild(randomCardPlayerTwo.getHTML());
+  computerCardOne.appendChild(randomCardComputerOne.getHTML());
 }
 
 function gameOver() {
   playerBetButton.innerText = "RESTART";
   computerCardTwo.appendChild(randomCardComputerTwo.getHTML());
-
   playerBetButton.addEventListener('click', () => {
-
     clear();
     startGame();
-  })
+  }, { once: true })
 }
 
 function clear() {
@@ -196,12 +224,10 @@ function clear() {
   while (elements.length > 0) {
     elements[0].parentNode.removeChild(elements[0]);
   }
-
   elements = document.getElementsByClassName("hello");
   while (elements.length > 0) {
     elements[0].parentNode.removeChild(elements[0]);
   }
-
   playerCardOne.classList.add('card-hide');
   playerCardTwo.classList.add('card-hide');
 }
