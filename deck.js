@@ -1,6 +1,6 @@
 const SUITS = ["♠", "♣", "♥", "♦", "♠", "♣", "♥", "♦"]
 const VALUES = [
-  "A",
+  // "A",
   "2",
   "3",
   "4",
@@ -13,7 +13,7 @@ const VALUES = [
   "J",
   "Q",
   "K",
-  "A",
+  // "A",
   "2",
   "3",
   "4",
@@ -72,6 +72,7 @@ class Card {
     const cardDiv = document.createElement('div')
     cardDiv.innerText = this.suit
     cardDiv.classList.add("card", this.color)
+    cardDiv.classList.add("hello")
     cardDiv.dataset.value = `${this.value} ${this.suit}`
     return cardDiv
   }
