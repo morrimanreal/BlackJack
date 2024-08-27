@@ -107,35 +107,34 @@ function addFirstTwoComputerCards() {
 
 }
 
-function compTotalHand() {
+function addComputerCards() {
   totalComputerHand = computerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
   console.log(`${totalComputerHand} totalComputerHand --- compTotalHand function`);
 }
 
-function checkIfDealerBust(total) {
-  if (totalComputerHand <= 21) {
-    console.log(`totalComputerHand ${totalComputerHand} is less than 21`)
-    console.log(`${total}`);
-    compareTotal();
-
-  } else if (totalComputerHand > 21) {
-    console.log(`DEALER BUST! compareTotal function ran ${totalComputerHand}`)
-    gameOver();
-  }
-
-}
-
 function compareTotal() {
-  if (totalComputerHand === totalPlayerHand) {
-    console.log(`TIE!`)
-  } else if (totalComputerHand > totalPlayerHand) {
-    console.log(`LOSE!`)
-  } else if (totalComputerHand > totalPlayerHand) {
-    console.log('WIN!')
+  if (totalComputerHand > 21) {
+    console.log(`DEALER BUST! compareTotal function ran ${totalComputerHand}`)
+  } else {
+    console.log(`totalComputerHand ${totalComputerHand} is less than 21`)
+
+    if (totalComputerHand === totalPlayerHand) {
+      console.log(`TIE!`)
+    } else if (totalComputerHand > totalPlayerHand) {
+      console.log(`LOSE!`)
+    } else if (totalComputerHand > totalPlayerHand) {
+      console.log('WIN!')
+    }
   }
   gameOver();
+}
+
+function addPlayerCards() {
+  totalPlayerHand = playerHand.reduce((total, item) => {
+    return total + (CARD_VALUE_MAP[item])
+  }, 0)
 }
 
 
@@ -143,9 +142,7 @@ function compareTotal() {
 
 function playerHit() {
   playerHitCard();
-  totalPlayerHand = playerHand.reduce((total, item) => {
-    return total + (CARD_VALUE_MAP[item])
-  }, 0)
+  addPlayerCards();
   console.log(`${totalPlayerHand} : totalPlayerHand`);
   if (totalPlayerHand > 21) {
     console.log("BUST");
@@ -158,11 +155,12 @@ function playerHit() {
 function playerStand() {
   playerHitButton.style.visibility = "hidden";
   playerStandButton.style.visibility = "hidden";
+  addPlayerCards();
   addFirstTwoComputerCards();
   if (firstTwoComputerTotal >= 17) {
     totalComputerHand = firstTwoComputerTotal;
-    console.log(`checking if total >=17 ran and output ${totalComputerHand} ${totalPlayerHand}`);
-    checkIfDealerBust();
+    console.log(`checking if total >=17 ran and output ${totalComputerHand}`);
+    compareTotal();
   } else {
     computerHitCard();
   }
@@ -189,11 +187,12 @@ function computerHitCard() {
     showComputerHitCard = computerHitCardElement.appendChild(computerCard.getHTML());
     showComputerHitCard.classList.add('card-hit');
     computerSideElement.appendChild(showComputerHitCard);
-    compTotalHand();
+    addComputerCards();
     i = totalComputerHand;
     console.log(`${computerHand} = ${i} computerHitCard function ran`);
   }
-  checkIfDealerBust();
+
+  compareTotal();
 }
 
 
