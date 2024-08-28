@@ -49,7 +49,8 @@ let deck,
 let firstTwoTotal,
   firstTwoComputerTotal,
   totalPlayerHand,
-  totalComputerHand;
+  totalComputerHand,
+  totalWithAce;
 
 newGame();
 startGame();
@@ -57,6 +58,8 @@ startGame();
 function newGame() {
   deck = new Deck();
   deck.shuffle();
+
+  console.log(deck);
 
   /* This is just the look of the back of the card that shows at the beginning of the game, can be changed in css for a nicer look */
   playerCardOne.classList.add('card-hide');
@@ -73,6 +76,7 @@ function startGame() {
   playerStandButton.style.visibility = "hidden";
 }
 
+/** blackjack hand being dealt */
 function dealCards() {
   playerHitButton.style.removeProperty("visibility");
   playerStandButton.style.removeProperty("visibility");
@@ -87,10 +91,58 @@ function dealCards() {
   computerHand.push(randomCardComputerOne.value);
   computerHand.push(randomCardComputerTwo.value);
 
-  addFirstTwoPlayerCards();
-  playerHitButton.addEventListener('click', playerHit);
-  playerStandButton.addEventListener('click', playerStand);
+  const isAcePresent = (value) => value === 'A';
+  if (playerHand.some(isAcePresent)) {
+    console.log("Ace is Present")
+    aceTotal();
+    if (totalWithAce === 11) {
+      console.log(`BlackJack!`)
+      gameOver();
+    } else if (totalWithAce < 12) {
+      totalWithAce = totalWithAce + 10;
+      console.log(`${totalWithAce}: newTotalPlus10`);
+      playerHitButton.addEventListener('click', () => {
+        playerHitWithAce();
+        console.log(`playerHand ${[playerHand]}`)
 
+
+
+      })
+    }
+  } else {
+    addFirstTwoPlayerCards();
+    playerHitButton.addEventListener('click', playerHit);
+    playerStandButton.addEventListener('click', playerStand);
+  }
+
+
+
+}
+
+
+/*  ACE FUNCTIONS...need to figure this shit out! */
+function checkForAce() {
+  const isAcePresent = (value) => value === 'A';
+
+  if (playerHand.some(isAcePresent)) {
+    console.log("Ace is Present")
+    totalWithAce = playerHand.reduce((total, item) => {
+      return total + (CARD_VALUE_MAP[item])
+    }, 0)
+
+    if (totalWithAce === 11) {
+      console.log('BlackJack');
+
+    } else if (totalWithAce < 12) {
+      let newTotalWithAce = totalWithAce + 10;
+      console.log(`${newTotalWithAce} : newTotalWithAce`);
+
+      playerHitButton.addEventListener('click', () => {
+        playerHitWithAce();
+        console.log(playerHand)
+      })
+    }
+  }
 }
 
 
@@ -104,7 +156,6 @@ function addFirstTwoPlayerCards() {
 function addFirstTwoComputerCards() {
   firstTwoComputerTotal = CARD_VALUE_MAP[randomCardComputerOne.value] + CARD_VALUE_MAP[randomCardComputerTwo.value];
   console.log(`${firstTwoComputerTotal} firstTwoComputerTotal`);
-
 }
 
 function addComputerCards() {
@@ -112,6 +163,12 @@ function addComputerCards() {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
   console.log(`${totalComputerHand} totalComputerHand --- compTotalHand function`);
+}
+
+function addPlayerCards() {
+  totalPlayerHand = playerHand.reduce((total, item) => {
+    return total + (CARD_VALUE_MAP[item])
+  }, 0)
 }
 
 function compareTotal() {
@@ -124,19 +181,18 @@ function compareTotal() {
       console.log(`TIE!`)
     } else if (totalComputerHand > totalPlayerHand) {
       console.log(`LOSE!`)
-    } else if (totalComputerHand > totalPlayerHand) {
+    } else if (totalComputerHand < totalPlayerHand) {
       console.log('WIN!')
     }
   }
   gameOver();
 }
 
-function addPlayerCards() {
-  totalPlayerHand = playerHand.reduce((total, item) => {
+function aceTotal() {
+  totalWithAce = playerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
 }
-
 
 /* PLAYER MOVES FUNCTIONS */
 
@@ -166,6 +222,16 @@ function playerStand() {
   }
 }
 
+/** PLAYER MOVES FUNCTIONS WITH ACE */
+
+function playerHitWithAce() {
+  playerHitCard();
+  totalWithAce = playerHand.reduce((total, item) => {
+    return total + (CARD_VALUE_MAP[item])
+  }, 0)
+  console.log(`${totalWithAce} : playerHitWithAce FUNCTION RAN`);
+}
+
 
 /* NEW CARDS HIT/POPPED FUNCTIONS */
 
@@ -180,7 +246,6 @@ function playerHitCard() {
 
 function computerHitCard() {
   let i = firstTwoComputerTotal;
-
   while (i < 17) {
     computerCard = deck.pop();
     computerHand.push(computerCard.value);
@@ -191,7 +256,6 @@ function computerHitCard() {
     i = totalComputerHand;
     console.log(`${computerHand} = ${i} computerHitCard function ran`);
   }
-
   compareTotal();
 }
 
@@ -233,52 +297,9 @@ function clear() {
 
 
 
-// const isAcePresent = (value) => value === 'A';
-
-// if (playerHand.some(isAcePresent)) {
-//   console.log("Ace is Present")
-//   const totalWithAce = playerHand.reduce((total, item) => {
-//     return total + (CARD_VALUE_MAP[item])
-//   }, 0)
-
-//   if (totalWithAce === 11) {
-//     console.log('BlackJack');
-
-//   } else if (totalWithAce < 12) {
-//     let newTotalWithAce = totalWithAce + 10;
-//     console.log(`${newTotalWithAce} : newTotalWithAce`);
-
-//     playerHitButton.addEventListener('click', () => {
-//       playerHit();
-
-//       playerHand.push(hitCard.value);
-//       console.log(playerHand)
 
 
-//       const hitWithAce = playerHand.reduce((total, item) => {
-//         return total + (CARD_VALUE_MAP[item])
-//       }, 0)
 
-//       console.log(`${hitWithAce} : hitWithAce`);
-
-
-//       const newTotalHitWithAce = hitWithAce + 10;
-
-//       console.log(`${newTotalHitWithAce}: newTotalHitWithAce`);
-
-//       if (newTotalHitWithAce > 21) {
-//         const bustAceCount = newTotalHitWithAce - 10;
-//         console.log(`${bustAceCount} : bustAceCount`);
-
-//         if (bustAceCount > 21) {
-//           console.log(`${bustAceCount} BUST! GAME OVER!`);
-//           gameOver();
-//         }
-//       }
-
-//     })
-//   }
-// }
 
 
 

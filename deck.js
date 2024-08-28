@@ -1,18 +1,31 @@
 const SUITS = ["♠", "♣", "♥", "♦", "♠", "♣", "♥", "♦"]
 const VALUES = [
-  // "A",
+  "A",
   // "2",
   // "3",
   // "4",
-  "5",
+  // "5",
   "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
+  // "7",
+  // "8",
+  // "9",
+  // "10",
+  // "J",
+  // "Q",
   "K",
+  "A",
+  // "2",
+  // "3",
+  // "4",
+  // "5",
+  // "6",
+  // "7",
+  // "8",
+  // "9",
+  // "10",
+  // "J",
+  // "Q",
+  // "K",
   // "A",
   // "2",
   // "3",
@@ -34,9 +47,9 @@ export default class Deck {
     this.cards = cards
   }
 
-  // get numberOfCards() {
-  //   return this.cards.length
-  // }
+  get numberOfCards() {
+    return this.cards.length
+  }
 
   pop() {
     return this.cards.shift()
