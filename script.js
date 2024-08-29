@@ -117,6 +117,7 @@ function dealCards() {
       } else if (totalPlayerHand < 12) {
         totalPlayerHand = totalPlayerHand + 10;
         console.log(`totalPlayerHand plus 10 is ${totalPlayerHand}`);
+        textPlayerUpdate.textContent = `You: ${totalPlayerHand}`;
         playerHitButton.addEventListener('click', () => {
           playerHitCard();
           addPlayerCards();
