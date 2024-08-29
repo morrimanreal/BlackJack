@@ -88,16 +88,17 @@ function dealCards() {
   playerHand.push(randomCardPlayerTwo.value);
   computerHand.push(randomCardComputerOne.value);
   computerHand.push(randomCardComputerTwo.value);
-
-  /**CHECK IF DEALER HAS BLACKJACK */
+  /**CHECK IF DEALER HAS BLACKJACK 
+   * BONUS: if Dealer shows 'A' ask for insurance once BETTING IS ADDED!
+  */
   addFirstTwoComputerCards();
-  if (firstTwoComputerTotal === 11) {
-    console.log(`Dealer has BlackJack!`)
-    playerHitButton.style.visibility = "hidden";
-    playerStandButton.style.visibility = "hidden";
-    if (addFirstTwoPlayerCards === 11) {
-      console.log(`TIE!`)
+  if (computerHand.some(computerCardHasAceAndFaceCard) && firstTwoComputerTotal === 11) {
+    addFirstTwoPlayerCards();
+    if (firstTwoTotal === 11) {
+      console.log(`TIE! BOTH BLACKJACK!`)
+      gameOver()
     } else {
+      console.log(`YOU LOSE!`);
       gameOver();
     }
   } else {
@@ -107,8 +108,6 @@ function dealCards() {
       addPlayerCards();
       if (totalPlayerHand === 11) {
         console.log(`BlackJack YOU WIN!`)
-        playerHitButton.style.visibility = "hidden";
-        playerStandButton.style.visibility = "hidden";
         gameOver();
       } else if (totalPlayerHand < 12) {
         totalPlayerHand = totalPlayerHand + 10;
@@ -150,7 +149,7 @@ function addComputerCards() {
   totalComputerHand = computerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
-  console.log(`${totalComputerHand} totalComputerHand --- compTotalHand function`);
+  console.log(`${totalComputerHand} totalComputerHand --- addComputerCards function`);
 }
 
 /** PLAYERS SIDE MATH */
@@ -163,7 +162,6 @@ function addPlayerCards() {
   totalPlayerHand = playerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
-
   console.log(`totalPlayerHand: ${totalPlayerHand}`)
 }
 
@@ -234,7 +232,11 @@ function playerStand() {
   playerStandButton.style.visibility = "hidden";
   addPlayerCards();
   addFirstTwoComputerCards();
-  if (firstTwoComputerTotal >= 17) {
+  if (computerHand.some(isAcePresent) && firstTwoComputerTotal >= 7) {
+    totalComputerHand = firstTwoComputerTotal + 10;
+    console.log(`checking if total >=17 ran and output PLUS 10 ${totalComputerHand}`);
+    compareTotal();
+  } else if (firstTwoComputerTotal >= 17) {
     totalComputerHand = firstTwoComputerTotal;
     console.log(`checking if total >=17 ran and output ${totalComputerHand}`);
     compareTotal();
@@ -283,14 +285,26 @@ function playerHitCard() {
 function computerHitCard() {
   let i = firstTwoComputerTotal;
   while (i < 17) {
-    computerCard = deck.pop();
-    computerHand.push(computerCard.value);
-    showComputerHitCard = computerHitCardElement.appendChild(computerCard.getHTML());
-    showComputerHitCard.classList.add('card-hit');
-    computerSideElement.appendChild(showComputerHitCard);
-    addComputerCards();
-    i = totalComputerHand;
-    console.log(`${computerHand} = ${i} computerHitCard function ran`);
+    if (computerHand.some(isAcePresent) && i < 7) {
+      computerCard = deck.pop();
+      computerHand.push(computerCard.value);
+      showComputerHitCard = computerHitCardElement.appendChild(computerCard.getHTML());
+      showComputerHitCard.classList.add('card-hit');
+      computerSideElement.appendChild(showComputerHitCard);
+      totalComputerHand = i + 10;
+      addComputerCards();
+      i = totalComputerHand;
+      console.log(`${computerHand} = ${i} computerHitCard function ran plus 10`);
+    } else {
+      computerCard = deck.pop();
+      computerHand.push(computerCard.value);
+      showComputerHitCard = computerHitCardElement.appendChild(computerCard.getHTML());
+      showComputerHitCard.classList.add('card-hit');
+      computerSideElement.appendChild(showComputerHitCard);
+      addComputerCards();
+      i = totalComputerHand;
+      console.log(`${computerHand} = ${i} computerHitCard function ran`);
+    }
   }
   compareTotal();
 }
@@ -309,7 +323,11 @@ function randomCardPoppedAndAppended() {
 
 const isAcePresent = (value) => value === 'A'; //checking if Ace is Present
 
+const computerCardHasAceAndFaceCard = (value) => (value === 'A' || value === '10' || value === 'J' || value === 'Q' || value === 'K');
+
 function gameOver() {
+  playerHitButton.style.visibility = "hidden";
+  playerStandButton.style.visibility = "hidden";
   playerBetButton.innerText = "RESTART";
   computerCardTwo.appendChild(randomCardComputerTwo.getHTML());
   playerBetButton.addEventListener('click', () => {
@@ -335,11 +353,13 @@ function clear() {
 
 /** PROBLEMS TO SOLVE
  * when [A, A, A] is the array for playerhands, it is over 13 and doesnt add 10 so figure that out! <=== SOLVED ===>
- * IF DEALER HAS BLACKJACK, figure out TIE, INSURANCE with player.
+ * IF DEALER HAS BLACKJACK, figure out TIE, INSURANCE with player. <=== HALF SOLVED ===> 
+ * UPDATE GAME STATE IN THE WINDOW AND SHOW STATS
  * Implement Ace count in DEALER side
  * figure out DOUBLE DOWN and SPLIT
  * add BETTING
  * ***BONUES*** if you can add some cut cards since its a 6 deck shoe [array]
+ * CLEAN UP CONSOLE LOGS!
  */
 
 
