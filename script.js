@@ -33,6 +33,7 @@ const tableContainer = document.querySelector('.container');
 const hitCardElement = document.createElement('div');
 const computerHitCardElement = document.createElement('div');
 
+/** GLOBAL VARIABLES FOR RANDOM CARDS SHUFFLED */
 let randomCardPlayerOne,
   randomCardPlayerTwo,
   randomCardComputerOne,
@@ -40,26 +41,27 @@ let randomCardPlayerOne,
   playerHand,
   computerHand;
 
+/** GLOBAL VARIABLES FOR PLAYER MOVES CARDS */
 let deck,
   hitCard,
   showHitCard,
   computerCard,
   showComputerHitCard;
 
+/** GLOBAL VARIABLES FOR MATH STUFF */
 let firstTwoTotal,
   firstTwoComputerTotal,
   totalPlayerHand,
-  totalComputerHand,
-  totalWithAce;
+  totalComputerHand;
 
+/** FIRST STEPS TO RUN THE GAME */
 newGame();
 startGame();
 
 function newGame() {
   deck = new Deck();
   deck.shuffle();
-
-  console.log(deck);
+  console.log(deck); // showing 312 cards, 6 decks of cards!
 
   /* This is just the look of the back of the card that shows at the beginning of the game, can be changed in css for a nicer look */
   playerCardOne.classList.add('card-hide');
@@ -80,74 +82,47 @@ function startGame() {
 function dealCards() {
   playerHitButton.style.removeProperty("visibility");
   playerStandButton.style.removeProperty("visibility");
-
-  randomCardPoppedAndAppended();
-
+  randomCardPoppedAndAppended(); // first three cards shown to player
   playerHand = [];
   computerHand = [];
-
   playerHand.push(randomCardPlayerOne.value);
   playerHand.push(randomCardPlayerTwo.value);
   computerHand.push(randomCardComputerOne.value);
   computerHand.push(randomCardComputerTwo.value);
 
-  const isAcePresent = (value) => value === 'A';
+  /** WHEN ACE SHOWS UP */
   if (playerHand.some(isAcePresent)) {
     console.log("Ace is Present")
-    aceTotal();
-    if (totalWithAce === 11) {
+    addPlayerCards();
+    if (totalPlayerHand === 11) {
       console.log(`BlackJack!`)
       gameOver();
-    } else if (totalWithAce < 12) {
-      totalWithAce = totalWithAce + 10;
-      console.log(`${totalWithAce}: newTotalPlus10`);
+    } else if (totalPlayerHand < 12) {
+      totalPlayerHand = totalPlayerHand + 10;
+      console.log(`totalPlayerHand plus 10 is ${totalPlayerHand}`);
       playerHitButton.addEventListener('click', () => {
-        playerHitWithAce();
-        console.log(`playerHand ${[playerHand]}`)
-
-
-
-      })
+        playerHitCard();
+        addPlayerCards();
+        if (totalPlayerHand > 21) {
+          totalPlayerHand = totalPlayerHand - 10;
+          console.log(`totalPlayerHand minus 10 is ${totalPlayerHand}`)
+          addPlayerCards();
+          if (totalPlayerHand > 21) {
+            console.log(`Finally Bust!`)
+            gameOver();
+          }
+        }
+      });
+      playerStandButton.addEventListener('click', playerStand);
     }
   } else {
     addFirstTwoPlayerCards();
     playerHitButton.addEventListener('click', playerHit);
     playerStandButton.addEventListener('click', playerStand);
   }
-
-
-
 }
-
-
-/*  ACE FUNCTIONS...need to figure this shit out! */
-function checkForAce() {
-  const isAcePresent = (value) => value === 'A';
-
-  if (playerHand.some(isAcePresent)) {
-    console.log("Ace is Present")
-    totalWithAce = playerHand.reduce((total, item) => {
-      return total + (CARD_VALUE_MAP[item])
-    }, 0)
-
-    if (totalWithAce === 11) {
-      console.log('BlackJack');
-
-    } else if (totalWithAce < 12) {
-      let newTotalWithAce = totalWithAce + 10;
-      console.log(`${newTotalWithAce} : newTotalWithAce`);
-
-      playerHitButton.addEventListener('click', () => {
-        playerHitWithAce();
-        console.log(playerHand)
-      })
-    }
-  }
-}
-
 
 /* GAME MATH STUFF FUNCTIONS */
-
 function addFirstTwoPlayerCards() {
   firstTwoTotal = CARD_VALUE_MAP[randomCardPlayerOne.value] + CARD_VALUE_MAP[randomCardPlayerTwo.value];
   console.log(firstTwoTotal);
@@ -169,6 +144,8 @@ function addPlayerCards() {
   totalPlayerHand = playerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
+
+  console.log(`totalPlayerHand: ${totalPlayerHand}`)
 }
 
 function compareTotal() {
@@ -188,24 +165,49 @@ function compareTotal() {
   gameOver();
 }
 
-function aceTotal() {
+function acePlayerTotal() {
   totalWithAce = playerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
 }
 
 /* PLAYER MOVES FUNCTIONS */
-
 function playerHit() {
   playerHitCard();
-  addPlayerCards();
-  console.log(`${totalPlayerHand} : totalPlayerHand`);
-  if (totalPlayerHand > 21) {
-    console.log("BUST");
-    gameOver();
-    playerHitButton.style.visibility = "hidden";
-    playerStandButton.style.visibility = "hidden";
+  if (hitCard.value === 'A') {
+    console.log(`hitCard is Ace ${hitCard.value}`);
+    addPlayerCards();
+    console.log(`${totalPlayerHand} : totalPlayerHandOnAceHit`)
+    if (totalPlayerHand < 12) {
+      console.log(`total is less than 12 so add ten`)
+      totalPlayerHand = totalPlayerHand + 10;
+      addPlayerCards();
+      console.log(`${totalPlayerHand}: totalPlayerHand + 10`)
+      if (totalPlayerHand > 21) {
+        totalPlayerHand = totalPlayerHand - 10;
+        console.log(`subtract ten ${totalPlayerHand}`)
+        if (totalPlayerHand > 21) {
+          console.log(`FINALLY BUST!`)
+          gameOver();
+        }
+      }
+    } else {
+      addPlayerCards();
+      console.log(`${totalPlayerHand}: Ace is above 12`)
+      if (totalPlayerHand > 21) {
+        console.log(`BUST!`)
+      }
+    }
+  } else {
+    addPlayerCards();
+    if (totalPlayerHand > 21) {
+      console.log("BUST");
+      gameOver();
+      playerHitButton.style.visibility = "hidden";
+      playerStandButton.style.visibility = "hidden";
+    }
   }
+
 }
 
 function playerStand() {
@@ -222,19 +224,34 @@ function playerStand() {
   }
 }
 
-/** PLAYER MOVES FUNCTIONS WITH ACE */
-
+/** PLAYER MOVES FUNCTIONS WITH ACE <=== NOT USED ===> */
 function playerHitWithAce() {
-  playerHitCard();
-  totalWithAce = playerHand.reduce((total, item) => {
-    return total + (CARD_VALUE_MAP[item])
-  }, 0)
-  console.log(`${totalWithAce} : playerHitWithAce FUNCTION RAN`);
+  if (totalPlayerHand < 12) {
+    console.log(`${totalPlayerHand} is less than 12 so add ten`)
+    totalPlayerHand = totalPlayerHand + 10;
+    addPlayerCards();
+    console.log(`${totalPlayerHand}: totalPlayerHand + 10`)
+    if (totalPlayerHand > 21) {
+      totalPlayerHand = totalPlayerHand - 10;
+      console.log(`subtract ten ${totalPlayerHand}`)
+      if (totalPlayerHand > 21) {
+        console.log(`FINALLY BUST!`)
+        gameOver();
+      }
+    }
+  } else {
+    addPlayerCards();
+    console.log(`${totalPlayerHand}: Ace is above 12`)
+    if (totalPlayerHand > 21) {
+      console.log(`BUST!`)
+    }
+  }
 }
+//figure out if you can put all value in one variable so its easier to compare numbers!
+//FIGURED OUT! but cant be used cause two diff if else statements for firstTwoCards with Ace and No Ace, try to see if u can make it both work with one function~
 
 
 /* NEW CARDS HIT/POPPED FUNCTIONS */
-
 function playerHitCard() {
   hitCard = deck.pop();
   playerHand.push(hitCard.value);
@@ -261,7 +278,6 @@ function computerHitCard() {
 
 
 /* GAME UPDATES FUNCTIONS */
-
 function randomCardPoppedAndAppended() {
   randomCardPlayerOne = deck.pop();
   randomCardPlayerTwo = deck.pop();
@@ -272,6 +288,8 @@ function randomCardPoppedAndAppended() {
   playerCardTwo.appendChild(randomCardPlayerTwo.getHTML());
   computerCardOne.appendChild(randomCardComputerOne.getHTML());
 }
+
+const isAcePresent = (value) => value === 'A'; //checking if Ace is Present
 
 function gameOver() {
   playerBetButton.innerText = "RESTART";
