@@ -26,11 +26,13 @@ const computerSideElement = document.querySelector('.computerSide');
 const playerBetButton = document.querySelector('.player-start-btn');
 const playerHitButton = document.querySelector('.player-hit-btn');
 const playerStandButton = document.querySelector('.player-stand-btn');
+const textPlayerUpdate = document.querySelector('.text-player');
+const textComputerUpdate = document.querySelector('.text-dealer');
 const textUpdate = document.querySelector('.text-update');
-const tableContainer = document.querySelector('.container');
 
 const hitCardElement = document.createElement('div');
 const computerHitCardElement = document.createElement('div');
+
 
 /** GLOBAL VARIABLES FOR RANDOM CARDS SHUFFLED */
 let randomCardPlayerOne,
@@ -71,6 +73,7 @@ function newGame() {
 
 
 function startGame() {
+  textUpdate.textContent = ``;
   playerBetButton.innerText = "START";
   playerBetButton.addEventListener('click', dealCards, { once: true });
   playerHitButton.style.visibility = "hidden";
@@ -117,6 +120,7 @@ function dealCards() {
           addPlayerCards();
           totalPlayerHand = totalPlayerHand + 10;
           console.log(`totalPlayerHand plus 10 is ${totalPlayerHand}`);
+          textPlayerUpdate.textContent = `You: ${totalPlayerHand}`;
           if (totalPlayerHand > 21) {
             totalPlayerHand = totalPlayerHand - 10;
             console.log(`totalPlayerHand minus 10 is ${totalPlayerHand}`)
@@ -143,6 +147,7 @@ function dealCards() {
 function addFirstTwoComputerCards() {
   firstTwoComputerTotal = CARD_VALUE_MAP[randomCardComputerOne.value] + CARD_VALUE_MAP[randomCardComputerTwo.value];
   console.log(`${firstTwoComputerTotal} firstTwoComputerTotal`);
+  // textComputerUpdate.textContent = `Dealer: ${firstTwoComputerTotal}`;
 }
 
 function addComputerCards() {
@@ -150,6 +155,7 @@ function addComputerCards() {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
   console.log(`${totalComputerHand} totalComputerHand --- addComputerCards function`);
+  textComputerUpdate.textContent = `Dealer: ${totalComputerHand}`;
 }
 
 /** PLAYERS SIDE MATH */
@@ -163,20 +169,25 @@ function addPlayerCards() {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
   console.log(`totalPlayerHand: ${totalPlayerHand}`)
+  textPlayerUpdate.textContent = `You: ${totalPlayerHand}`;
 }
 
 function compareTotal() {
   if (totalComputerHand > 21) {
     console.log(`DEALER BUST! compareTotal function ran ${totalComputerHand}`)
+    textUpdate.textContent = `Dealer BUST! YOU WIN!`;
   } else {
     console.log(`totalComputerHand ${totalComputerHand} is less than 21`)
 
     if (totalComputerHand === totalPlayerHand) {
       console.log(`TIE!`)
+      textUpdate.textContent = `TIE!`;
     } else if (totalComputerHand > totalPlayerHand) {
       console.log(`LOSE!`)
+      textUpdate.textContent = `YOU LOST!`;
     } else if (totalComputerHand < totalPlayerHand) {
       console.log('WIN!')
+      textUpdate.textContent = `YOU WIN!`;
     }
   }
   gameOver();
@@ -257,6 +268,7 @@ function playerHitWithAce() {
       console.log(`subtract ten ${totalPlayerHand}`)
       if (totalPlayerHand > 21) {
         console.log(`FINALLY BUST!`)
+        textUpdate.textContent = `YOU BUST!`;
         gameOver();
       }
     }
@@ -265,6 +277,7 @@ function playerHitWithAce() {
     console.log(`${totalPlayerHand}: Ace is above 12`)
     if (totalPlayerHand > 21) {
       console.log(`BUST!`)
+      textUpdate.textContent = `YOU BUST!`;
     }
   }
 }
