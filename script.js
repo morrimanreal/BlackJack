@@ -16,7 +16,6 @@ let CARD_VALUE_MAP = {
   "A": 1
 }
 
-
 const playerCardOne = document.querySelector('.player-card-one');
 const playerCardTwo = document.querySelector('.player-card-two');
 const computerCardOne = document.querySelector('.computer-card-one');
@@ -90,44 +89,58 @@ function dealCards() {
   computerHand.push(randomCardComputerOne.value);
   computerHand.push(randomCardComputerTwo.value);
 
-  /** WHEN ACE SHOWS UP */
-  if (playerHand.some(isAcePresent)) {
-    console.log("Ace is Present")
-    addPlayerCards();
-    if (totalPlayerHand === 11) {
-      console.log(`BlackJack!`)
+  /**CHECK IF DEALER HAS BLACKJACK */
+  addFirstTwoComputerCards();
+  if (firstTwoComputerTotal === 11) {
+    console.log(`Dealer has BlackJack!`)
+    playerHitButton.style.visibility = "hidden";
+    playerStandButton.style.visibility = "hidden";
+    if (addFirstTwoPlayerCards === 11) {
+      console.log(`TIE!`)
+    } else {
       gameOver();
-    } else if (totalPlayerHand < 12) {
-      totalPlayerHand = totalPlayerHand + 10;
-      console.log(`totalPlayerHand plus 10 is ${totalPlayerHand}`);
-      playerHitButton.addEventListener('click', () => {
-        playerHitCard();
-        addPlayerCards();
-        if (totalPlayerHand > 21) {
-          totalPlayerHand = totalPlayerHand - 10;
-          console.log(`totalPlayerHand minus 10 is ${totalPlayerHand}`)
-          addPlayerCards();
-          if (totalPlayerHand > 21) {
-            console.log(`Finally Bust!`)
-            gameOver();
-          }
-        }
-      });
-      playerStandButton.addEventListener('click', playerStand);
     }
   } else {
-    addFirstTwoPlayerCards();
-    playerHitButton.addEventListener('click', playerHit);
-    playerStandButton.addEventListener('click', playerStand);
+    /** WHEN ACE SHOWS UP AT THE BEGINNING OF THE HAND*/
+    if (playerHand.some(isAcePresent)) {
+      console.log("Ace is Present")
+      addPlayerCards();
+      if (totalPlayerHand === 11) {
+        console.log(`BlackJack YOU WIN!`)
+        playerHitButton.style.visibility = "hidden";
+        playerStandButton.style.visibility = "hidden";
+        gameOver();
+      } else if (totalPlayerHand < 12) {
+        totalPlayerHand = totalPlayerHand + 10;
+        console.log(`totalPlayerHand plus 10 is ${totalPlayerHand}`);
+        playerHitButton.addEventListener('click', () => {
+          playerHitCard();
+          addPlayerCards();
+          totalPlayerHand = totalPlayerHand + 10;
+          console.log(`totalPlayerHand plus 10 is ${totalPlayerHand}`);
+          if (totalPlayerHand > 21) {
+            totalPlayerHand = totalPlayerHand - 10;
+            console.log(`totalPlayerHand minus 10 is ${totalPlayerHand}`)
+            addPlayerCards();
+            if (totalPlayerHand > 21) {
+              console.log(`Finally Bust!`)
+              gameOver();
+            }
+          }
+        });
+        playerStandButton.addEventListener('click', playerStand);
+      }
+    } else {
+      addFirstTwoPlayerCards();
+      playerHitButton.addEventListener('click', playerHit);
+      playerStandButton.addEventListener('click', playerStand);
+    }
   }
 }
 
 /* GAME MATH STUFF FUNCTIONS */
-function addFirstTwoPlayerCards() {
-  firstTwoTotal = CARD_VALUE_MAP[randomCardPlayerOne.value] + CARD_VALUE_MAP[randomCardPlayerTwo.value];
-  console.log(firstTwoTotal);
-}
 
+/** COMPUTER SIDE MATH */
 function addFirstTwoComputerCards() {
   firstTwoComputerTotal = CARD_VALUE_MAP[randomCardComputerOne.value] + CARD_VALUE_MAP[randomCardComputerTwo.value];
   console.log(`${firstTwoComputerTotal} firstTwoComputerTotal`);
@@ -138,6 +151,12 @@ function addComputerCards() {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
   console.log(`${totalComputerHand} totalComputerHand --- compTotalHand function`);
+}
+
+/** PLAYERS SIDE MATH */
+function addFirstTwoPlayerCards() {
+  firstTwoTotal = CARD_VALUE_MAP[randomCardPlayerOne.value] + CARD_VALUE_MAP[randomCardPlayerTwo.value];
+  console.log(firstTwoTotal);
 }
 
 function addPlayerCards() {
@@ -174,6 +193,7 @@ function acePlayerTotal() {
 /* PLAYER MOVES FUNCTIONS */
 function playerHit() {
   playerHitCard();
+  //IF Ace Card shows up as the hitCard then do the following
   if (hitCard.value === 'A') {
     console.log(`hitCard is Ace ${hitCard.value}`);
     addPlayerCards();
@@ -207,7 +227,6 @@ function playerHit() {
       playerStandButton.style.visibility = "hidden";
     }
   }
-
 }
 
 function playerStand() {
@@ -276,7 +295,6 @@ function computerHitCard() {
   compareTotal();
 }
 
-
 /* GAME UPDATES FUNCTIONS */
 function randomCardPoppedAndAppended() {
   randomCardPlayerOne = deck.pop();
@@ -315,7 +333,14 @@ function clear() {
 
 
 
-
+/** PROBLEMS TO SOLVE
+ * when [A, A, A] is the array for playerhands, it is over 13 and doesnt add 10 so figure that out! <=== SOLVED ===>
+ * IF DEALER HAS BLACKJACK, figure out TIE, INSURANCE with player.
+ * Implement Ace count in DEALER side
+ * figure out DOUBLE DOWN and SPLIT
+ * add BETTING
+ * ***BONUES*** if you can add some cut cards since its a 6 deck shoe [array]
+ */
 
 
 
