@@ -74,6 +74,8 @@ function newGame() {
 
 function startGame() {
   textUpdate.textContent = ``;
+  textPlayerUpdate.textContent = `You`;
+  textComputerUpdate.textContent = `Dealer`;
   playerBetButton.innerText = "START";
   playerBetButton.addEventListener('click', dealCards, { once: true });
   playerHitButton.style.visibility = "hidden";
