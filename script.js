@@ -149,8 +149,6 @@ function dealCards() {
 /** COMPUTER SIDE MATH */
 function addFirstTwoComputerCards() {
   firstTwoComputerTotal = CARD_VALUE_MAP[randomCardComputerOne.value] + CARD_VALUE_MAP[randomCardComputerTwo.value];
-  console.log(`${firstTwoComputerTotal} firstTwoComputerTotal`);
-  // textComputerUpdate.textContent = `Dealer: ${firstTwoComputerTotal}`;
 }
 
 function addComputerCards() {
@@ -185,13 +183,16 @@ function compareTotal() {
     textPlayerUpdate.textContent = `Dealer: ${totalPlayerHand}`;
     if (totalComputerHand === totalPlayerHand) {
       textUpdate.textContent = `Tie!`;
+      gameOver();
     } else if (totalComputerHand > totalPlayerHand) {
       textUpdate.textContent = `You Lost!`;
+      gameOver();
     } else if (totalComputerHand < totalPlayerHand) {
       textUpdate.textContent = `You Win!`;
+      gameOver();
     }
   }
-  gameOver();
+
 }
 
 function acePlayerTotal() {
@@ -247,19 +248,6 @@ function playerStand() {
     totalComputerHand = firstTwoComputerTotal + 10;
     console.log(`checking if total >=17 ran and output PLUS 10 ${totalComputerHand}`);
     compareTotal();
-    // } else if (computerHand.some(isAcePresent) && firstTwoComputerTotal < 7) {
-    //   totalComputerHand = firstTwoComputerTotal;
-    //   while (totalComputerHand < 7) {
-    //     grabComputerCards();
-    //     addComputerCards();
-    //   }
-    //   if (totalComputerHand >= 7 && totalComputerHand < 11) {
-    //     totalComputerHand = totalComputerHand + 10;
-    //     compareTotal();
-    //   } else {
-    //     gameOver();
-    //     textUpdate.textContent = `Dealer Bust with Ace Count`;
-    //   }
   } else if (firstTwoComputerTotal >= 17) {
     totalComputerHand = firstTwoComputerTotal;
     console.log(`checking if total >=17 ran and output ${totalComputerHand}`);
@@ -310,9 +298,12 @@ function playerHitCard() {
 }
 
 function computerHitCard() {
-  addPlayerCards();
   while (totalComputerHand < 17) {
-    grabComputerCards();
+    computerCard = deck.pop(); //grab random card from array
+    computerHand.push(computerCard.value); //insert card into computerHand array
+    showComputerHitCard = computerHitCardElement.appendChild(computerCard.getHTML()); //show the card 
+    showComputerHitCard.classList.add('card-hit'); //apply the card css
+    computerSideElement.appendChild(showComputerHitCard);// show the card at the right location
     addComputerCards();
   } compareTotal();
 }
