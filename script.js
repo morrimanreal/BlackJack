@@ -243,19 +243,19 @@ function playerHit() {
 function playerStand() {
   playerHitButton.style.visibility = "hidden";
   playerStandButton.style.visibility = "hidden";
-  if (computerHand.some(isAcePresent)) {
-    addComputerCards();
-    while (totalComputerHand <= 7) {
-      grabComputerCards();
-      addComputerCards();
-    } totalComputerHand = totalComputerHand + 10;
+  addFirstTwoComputerCards();
+  if (computerHand.some(isAcePresent) && firstTwoComputerTotal >= 7) {
+    totalComputerHand = firstTwoComputerTotal + 10;
+    console.log(`checking if total >=17 ran and output PLUS 10 ${totalComputerHand}`);
     compareTotal();
-  } else {
-    while (totalComputerHand < 17) {
-      grabComputerCards();
-      addComputerCards();
-    } compareTotal();
-  }
+  } else if (firstTwoComputerTotal >= 17) {
+    totalComputerHand = firstTwoComputerTotal;
+    console.log(`checking if total >=17 ran and output ${totalComputerHand}`);
+    compareTotal();
+  } else
+    totalComputerHand = firstTwoComputerTotal;
+  computerHitCard();
+
 }
 
 /** PLAYER MOVES FUNCTIONS WITH ACE <=== NOT USED ===> */
