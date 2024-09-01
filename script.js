@@ -117,9 +117,9 @@ function dealCards() {
         textUpdate.textContent = `Blackjack! You Win!`
         gameOver();
       } else if (totalPlayerHand < 12) {
-        totalPlayerHand = totalPlayerHand + 10;
+        // totalPlayerHand = totalPlayerHand + 10;
         console.log(`totalPlayerHand plus 10 is ${totalPlayerHand}`);
-        textPlayerUpdate.textContent = `You: ${totalPlayerHand}`;
+        textPlayerUpdate.textContent = `You: ${totalPlayerHand + 10}`;
         playerHitButton.addEventListener('click', () => {
           playerHitCard();
           addPlayerCards();
@@ -174,7 +174,7 @@ function addPlayerCards() {
   totalPlayerHand = playerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
-  textComputerUpdate.textContent = `Dealer: ${totalComputerHand}`;
+  textPlayerUpdate.textContent = `Dealer: ${totalPlayerHand}`;
 }
 
 function compareTotal() {
