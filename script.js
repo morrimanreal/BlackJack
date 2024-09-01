@@ -97,7 +97,7 @@ function dealCards() {
    * BONUS: if Dealer shows 'A' ask for insurance once BETTING IS ADDED!
   */
   addFirstTwoComputerCards();
-  if (computerHand.some(computerCardHasAceAndFaceCard) && firstTwoComputerTotal === 11) {
+  if (computerHand.some(isAcePresent) && firstTwoComputerTotal === 11) {
     addFirstTwoPlayerCards();
     if (firstTwoTotal === 11) {
       console.log(`TIE! BOTH BLACKJACK!`)
@@ -174,6 +174,7 @@ function addPlayerCards() {
   totalPlayerHand = playerHand.reduce((total, item) => {
     return total + (CARD_VALUE_MAP[item])
   }, 0)
+  textComputerUpdate.textContent = `Dealer: ${totalComputerHand}`;
 }
 
 function compareTotal() {
@@ -211,6 +212,7 @@ function playerHit() {
     console.log(`hitCard is Ace ${hitCard.value}`);
     addPlayerCards();
     console.log(`${totalPlayerHand} : totalPlayerHandOnAceHit`)
+    textPlayerUpdate.textContent = `You: ${totalPlayerHand}`;
     if (totalPlayerHand < 12) {
       console.log(`total is less than 12 so add ten`)
       totalPlayerHand = totalPlayerHand + 10;
@@ -226,22 +228,15 @@ function playerHit() {
           gameOver();
         }
       }
-    } else {
-      addPlayerCards();
-      console.log(`${totalPlayerHand}: Ace is above 12`)
-      if (totalPlayerHand > 21) {
-        console.log(`BUST!`)
-      }
     }
   } else {
     addPlayerCards();
     textPlayerUpdate.textContent = `You: ${totalPlayerHand}`;
     if (totalPlayerHand > 21) {
+      addFirstTwoComputerCards
       console.log("BUST");
       textUpdate.textContent = `Bust! You Lose!`
       gameOver();
-      playerHitButton.style.visibility = "hidden";
-      playerStandButton.style.visibility = "hidden";
     }
   }
 }
@@ -252,11 +247,11 @@ function playerStand() {
   addFirstTwoComputerCards();
   textComputerUpdate.textContent = `Dealer: ${firstTwoComputerTotal}`;
   if (computerHand.some(isAcePresent) && firstTwoComputerTotal >= 7) {
-    totalComputerHand = totalComputerHand + 10;
-    console.log(`checking if total >=17 ran and output PLUS 10 ${firstTwoComputerTotal}`);
-    textComputerUpdate.textContent = `Dealer: ${firstTwoComputerTotal}`;
+    totalComputerHand = firstTwoComputerTotal + 10;
+    console.log(`checking if total >=17 ran and output PLUS 10 ${totalComputerHand}`);
+    textComputerUpdate.textContent = `Dealer: ${totalComputerHand}`;
     compareTotal();
-  } else if (totalComputerHand >= 17) {
+  } else if (firstTwoComputerTotal >= 17) {
     totalComputerHand = firstTwoComputerTotal;
     console.log(`checking if total >=17 ran and output ${firstTwoComputerTotal}`);
     compareTotal();
