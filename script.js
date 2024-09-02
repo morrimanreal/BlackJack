@@ -84,6 +84,7 @@ function startGame() {
 
 /** blackjack hand being dealt */
 function dealCards() {
+  playerBetButton.style.visibility = "hidden";
   playerHitButton.style.removeProperty("visibility");
   playerStandButton.style.removeProperty("visibility");
   randomCardPoppedAndAppended(); // first three cards shown to player
@@ -93,9 +94,7 @@ function dealCards() {
   playerHand.push(randomCardPlayerTwo.value);
   computerHand.push(randomCardComputerOne.value);
   computerHand.push(randomCardComputerTwo.value);
-  /**CHECK IF DEALER HAS BLACKJACK 
-   * BONUS: if Dealer shows 'A' ask for insurance once BETTING IS ADDED!
-  */
+
   addFirstTwoComputerCards();
   if (computerHand.some(isAcePresent) && firstTwoComputerTotal === 11) {
     addFirstTwoPlayerCards();
@@ -114,6 +113,7 @@ function dealCards() {
       console.log("Ace is Present")
       addPlayerCards();
       if (totalPlayerHand === 11) {
+        textPlayerUpdate.textContent = `You: ${totalPlayerHand + 10}`;
         textUpdate.textContent = `Blackjack! You Win!`
         gameOver();
       } else if (totalPlayerHand < 12) {
@@ -273,6 +273,26 @@ function playerHitCard() {
 function computerHitCard() {
   grabComputerCard();
   addComputerCards();
+
+  if (computerHand.some(isAcePresent) || computerCard === 'A') {
+    while (totalComputerHand < 7) {
+      grabComputerCard();
+      addComputerCards();
+    } if (totalComputerHand < 12) {
+      totalComputerHand = totalComputerHand + 10;
+      textComputerUpdate.textContent = `Dealer: ${totalComputerHand}`
+      compareTotal();
+    } else if (totalComputerHand > 11) {
+      while (totalComputerHand < 17) {
+        grabComputerCard();
+        addComputerCards();
+        if (totalComputerHand > 21) {
+          textComputerUpdate.textContent = `Dealer Bust on Ace! You Win!`
+          gameOver();
+        }
+      } compareTotal();
+    }
+  }
   while (totalComputerHand < 17) {
     grabComputerCard();
     addComputerCards();
@@ -305,6 +325,7 @@ const isAcePresent = (value) => value === 'A'; //checking if Ace is Present
 const computerCardHasAceAndFaceCard = (value) => (value === 'A' || value === '10' || value === 'J' || value === 'Q' || value === 'K');
 
 function gameOver() {
+  playerBetButton.style.removeProperty("visibility");
   playerHitButton.style.visibility = "hidden";
   playerStandButton.style.visibility = "hidden";
   playerBetButton.innerText = "RESTART";
