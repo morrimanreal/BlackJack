@@ -162,22 +162,15 @@ function checkAceForTwo(cardOne, cardTwo) {
   return 0;
 }
 
-function reduceAcePlayer(totalSum, totalAceCount) {
+function reduceAce(totalSum, totalAceCount) {
   while (totalSum > 21 && totalAceCount > 0) {
     totalSum -= 10;
     totalAceCount -= 1;
   }
-  textPlayerUpdate.textContent = `You: ${playerSum}`
-  return playerSum;
+  textPlayerUpdate.textContent = `You: ${totalSum}`
+  return totalSum;
 }
 
-function reduceAceDealer(totalSum, totalAceCount) {
-  while (totalSum > 21 && totalAceCount > 0) {
-    totalSum -= 10;
-    totalAceCount -= 1;
-  }
-  return dealerSum;
-}
 
 function playerHit() {
   if (!canHit) {
@@ -193,7 +186,7 @@ function playerHit() {
   console.log(playerAceCount);
   textPlayerUpdate.textContent = `You: ${playerSum}`
 
-  if (reduceAcePlayer(playerSum, playerAceCount) > 21) {
+  if (reduceAce(playerSum, playerAceCount) > 21) {
     canHit = false;
   }
 }
@@ -216,8 +209,8 @@ function playerStand() {
 }
 
 function compareTotal() {
-  dealerSum = reduceAceDealer(dealerSum, dealerAceCount);
-  playerSum = reduceAcePlayer(playerSum, playerAceCount);
+  dealerSum = reduceAce(dealerSum, dealerAceCount);
+  playerSum = reduceAce(playerSum, playerAceCount);
 
   canHit = false;
   if (playerSum > 21) {
