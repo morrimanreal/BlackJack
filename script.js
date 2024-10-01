@@ -1,5 +1,4 @@
 import Deck from './deck.js'
-
 let CARD_VALUE_MAP = {
   "2": 2,
   "3": 3,
@@ -16,264 +15,250 @@ let CARD_VALUE_MAP = {
   "A": 11
 }
 
-
-/** FOR LOOKS PURPOSES, SHOWING THE BACK OF THE DECK */
-const playerCardOne = document.querySelector('.player-card-one');
-const playerCardTwo = document.querySelector('.player-card-two');
-const dealerCard = document.querySelector('.computer-card');
-const dealerHiddenCard = document.querySelector('.computer-hidden-card');
-
-
-const playerSlot = document.querySelector('.playerSide');
-const dealerSlot = document.querySelector('.computerSide');
-const playerBetButton = document.querySelector('.player-start-btn');
-const playerHitButton = document.querySelector('.player-hit-btn');
-const playerStandButton = document.querySelector('.player-stand-btn');
-const textPlayerUpdate = document.querySelector('.text-player');
-const textDealerUpdate = document.querySelector('.text-dealer');
-const textUpdate = document.querySelector('.text-update');
+const player_slot = document.querySelector('.playerSide');
+const dealer_slot = document.querySelector('.computerSide');
+const p_bet_btn = document.querySelector('.player-start-btn');
+const p_hit_btn = document.querySelector('.player-hit-btn');
+const p_stand_btn = document.querySelector('.player-stand-btn');
+const p_text_update = document.querySelector('.text-player');
+const dealer_text_update = document.querySelector('.text-dealer');
+const text_update = document.querySelector('.text-update');
 
 /**FOR CREATING NEW CARDS AS GAME PROGRESSES */
-const playerCards = document.createElement('div');
-const dealerCards = document.createElement('div');
+const hit_card_element = document.createElement('div');
 
+/**BACK CARDS */
+const playerOne_back_card = document.createElement('div');
+const playerTwo_back_card = document.createElement('div');
+const dealerOne_back_card = document.createElement('div');
+const dealerTwo_back_card = document.createElement('div');
+playerOne_back_card.classList.add('card-hide');
+playerTwo_back_card.classList.add('card-hide');
+dealerOne_back_card.classList.add('card-hide');
+dealerTwo_back_card.classList.add('card-hide');
 
-/** GLOBAL VARIABLES FOR RANDOM CARDS SHUFFLED */
-let randomCard,
-  hiddenCard,
-  dealerCardOne = 0;
-
-
-/** GLOBAL VARIABLES FOR PLAYER MOVES CARDS */
-let deck,
-  showHitCard,
-  canHit = true;
-
-
-/** GLOBAL VARIABLES FOR MATH STUFF */
-let playerSum = 0,
-  dealerSum = 0,
-  playerAceCount = 0,
-  dealerAceCount = 0;
-
+let dealer_card_array, player_card_array;
+let deck;
+let showHitCard;
+let totalSum = 0,
+  dealerTotalSum,
+  playerTotalSum;
 
 /** FIRST STEPS TO RUN THE GAME */
 newGame();
 startGame();
 
+function HAND_IN_PLAY() {
+  /**UI UPDATES */
+  hide_btn(p_bet_btn);
+  show_btn(p_hit_btn);
+  show_btn(p_stand_btn);
+  remove_back_card();
+
+  /**DEALS FIRST TWO DEALER CARDS AND HIDES SECOND CARD*/
+  dealer_card_array = [];
+  player_card_array = [];
+  dealInitialCards(dealer_card_array, dealer_slot);
+  const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
+  console.log(hidden_card);
+  hidden_card.style.display = 'none';
+  dealer_slot.appendChild(dealerTwo_back_card);
+
+  /**DEALS FIRST TWO PLAYER CARDS*/
+  dealInitialCards(player_card_array, player_slot);
+  console.log(player_card_array);
+  playerTotalSum = addCards(player_card_array);
+  p_text_update.innerText = `Player: ${playerTotalSum}`;
+
+  /**ORDER OF GAMEPLAY*/
+  checkBlackJack(player_card_array, dealer_card_array);
+  p_hit_btn.addEventListener('click', playerHit);
+  p_stand_btn.addEventListener('click', playerStand);
+}
+
+/**FUNCTIONS! */
 function newGame() {
   deck = new Deck();
   deck.shuffle();
-  console.log(deck); // showing 312 cards, 6 decks of cards!
-
-  /* This is just the look of the back of the card that shows at the beginning of the game, can be changed in css for a nicer look */
-  playerCardOne.classList.add('card-hide');
-  playerCardTwo.classList.add('card-hide');
-  dealerCard.classList.add('card-hide');
-  dealerHiddenCard.classList.add('card-hide');
+  console.log(deck);
 }
 
 function startGame() {
   /**UI UPDATES EVERY START OF THE GAME */
-  textUpdate.textContent = ``;
-  textPlayerUpdate.textContent = `You`;
-  textDealerUpdate.textContent = `Dealer`;
-  playerBetButton.innerText = "START";
-  playerHitButton.style.visibility = "hidden";
-  playerStandButton.style.visibility = "hidden";
+  show_back_card();
+  resetTexts();
+  show_btn(p_bet_btn);
+  hide_btn(p_hit_btn);
+  hide_btn(p_stand_btn);
   /**WHEN PLAYER CLICK START GAME, CARDS WILL BE DEALT */
-  playerBetButton.addEventListener('click', dealCards, { once: true });
+  p_bet_btn.addEventListener('click', HAND_IN_PLAY, { once: true });
 }
 
-function dealCards() {
-  /**UI UPDATES */
-  playerBetButton.style.visibility = "hidden";
-  playerHitButton.style.removeProperty("visibility");
-  playerStandButton.style.removeProperty("visibility");
-
-  pullCard(dealerCards);
-  dealerCard.remove();
-  hiddenCard = deck.pop();
-  dealerCardOne = deck.pop();
-  dealerSlot.append(dealerCardOne.getHTML());
-  dealerSum += getTwoValues(hiddenCard, dealerCardOne);
-  dealerAceCount += checkAceForTwo(hiddenCard, dealerCardOne);
-  console.log(hiddenCard);
-  console.log(dealerCardOne);
-  console.log(dealerSum);
-  console.log(dealerAceCount);
-
-
+function dealInitialCards(array, slot) {
   for (let i = 0; i < 2; i++) {
-    pullCard(playerCards);
-    playerCardOne.remove();
-    playerCardTwo.remove();
-    playerSlot.append(playerCards);
-    playerSum += getValue(randomCard);
-    playerAceCount += checkAce(randomCard);
-    console.log(randomCard)
-    textPlayerUpdate.textContent = `You: ${playerSum}`
-  }
-
-
-  checkBlackJack();
-  playerHitButton.addEventListener('click', playerHit);
-  playerStandButton.addEventListener('click', playerStand);
-}
-
-function checkBlackJack() {
-  if (checkAceForTwo(hiddenCard, dealerCardOne) === 1 && dealerSum === 21) {
-    textUpdate.textContent = 'Dealer BlackJack!!'
-    gameOver();
-  }
-  else if (randomCard.value === 'A' && playerSum === 21) {
-    textUpdate.textContent = 'Player BlackJack!'
-    gameOver();
+    let card = deck.pop();
+    array.push(card);
+    slot.appendChild(card.getHTML());
   }
 }
 
-function pullCard(card) {
-  randomCard = deck.pop();
-  card.appendChild(randomCard.getHTML());
+function aceCount(array) {
+  //if there are more than one ace in an array and the equal is over 21 then subtract 10
+
+  //map through the whole array and count the aces and add everything
+
 }
 
-function getValue(card) {
-  let value = CARD_VALUE_MAP[card.value];
-  return value;
-}
+function checkBlackJack(player_array, dealer_array) {
+  let dealer_total = dealer_array.reduce(getSum, 0);
+  let player_total = player_array.reduce(getSum, 0);
 
-function checkAce(card) {
-  if (card.value === 'A') {
-    return 1;
-  }
-  return 0;
-}
-
-function getTwoValues(cardOne, cardTwo) {
-  let value = CARD_VALUE_MAP[cardOne.value] + CARD_VALUE_MAP[cardTwo.value];
-  return value;
-}
-
-
-function checkAceForTwo(cardOne, cardTwo) {
-  if (cardOne.value === 'A' || cardTwo.value === 'A') {
-    return 1;
-  }
-  return 0;
-}
-
-function reduceAce(totalSum, totalAceCount) {
-  while (totalSum > 21 && totalAceCount > 0) {
-    totalSum -= 10;
-    totalAceCount -= 1;
-  }
-  textPlayerUpdate.textContent = `You: ${totalSum}`
-  return totalSum;
-}
-
-
-function playerHit() {
-  if (!canHit) {
+  if (player_total == 21 || dealer_total == 21) {
+    const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
+    dealer_slot.removeChild(dealerTwo_back_card);
+    console.log(hidden_card);
+    hidden_card.style.display = 'flex';
+    // check blackJack
+    if (player_total === dealer_total) {
+      text_update.textContent = `Tie!`;
+      resetGame(player_array, dealer_array);
+    } else if (player_total > dealer_total) {
+      text_update.textContent = `Player Blackjack!`;
+      resetGame(player_array, dealer_array);
+    } else if (player_total < dealer_total) {
+      text_update.textContent = `Dealer Blackjack!`;
+      resetGame(player_array, dealer_array);
+    }
+  } else {
     return;
   }
+  console.log(dealer_total);
+  console.log(player_total);
+}
 
-  randomCard = deck.pop();
-  showHitCard = playerSlot.appendChild(randomCard.getHTML());
-  showHitCard.classList.add('card-hit');
-  playerSum += getValue(randomCard);
-  playerAceCount += checkAce(randomCard);
-  console.log(playerSum);
-  console.log(playerAceCount);
-  textPlayerUpdate.textContent = `You: ${playerSum}`
+function playerHit() {
+  hitCard(player_card_array, player_slot);
+  playerTotalSum = addCards(player_card_array);
+  p_text_update.innerText = `Player: ${playerTotalSum}`;
 
-  if (reduceAce(playerSum, playerAceCount) > 21) {
-    canHit = false;
+  if (playerTotalSum > 21) {
+    text_update.innerText = "You bust!"
+    resetGame();
   }
 }
 
 function playerStand() {
-  dealerHiddenCard.remove();
-  dealerSlot.append(hiddenCard.getHTML());
+  hide_btn(p_stand_btn);
+  hide_btn(p_hit_btn);
 
-  while (dealerSum < 17) {
-    let hitCard = deck.pop();
-    dealerSum += getValue(hitCard);
-    dealerAceCount += checkAce(hitCard);
-    dealerSlot.appendChild(hitCard.getHTML());
-    console.log(hitCard);
-    textDealerUpdate.textContent = `Dealer: ${dealerSum}`
+  const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
+  console.log(hidden_card);
+  hidden_card.style.display = 'flex';
+  dealer_slot.removeChild(dealerTwo_back_card);
+  dealerTotalSum = addCards(dealer_card_array);
+  dealer_text_update.innerText = `Dealer: ${dealerTotalSum}`;
 
+  while (dealerTotalSum < 17) {
+    hitCard(dealer_card_array, dealer_slot);
+    dealerTotalSum = addCards(dealer_card_array);
+    dealer_text_update.innerText = `Dealer: ${dealerTotalSum}`;
   }
-  compareTotal();
-
+  if (dealerTotalSum > 21) {
+    text_update.innerText = "Dealer bust!";
+    resetGame();
+  } else
+    compareTotal();
 }
 
 function compareTotal() {
-  dealerSum = reduceAce(dealerSum, dealerAceCount);
-  playerSum = reduceAce(playerSum, playerAceCount);
+  console.log(playerTotalSum);
+  console.log(dealerTotalSum);
 
-  canHit = false;
-  if (playerSum > 21) {
-    textUpdate.textContent = 'YOU LOSE!'
+  if (dealerTotalSum === playerTotalSum) {
+    text_update.innerText = "Tie!"
+    resetGame();
   }
-  else if (dealerSum > 21) {
-    textUpdate.textContent = 'YOU WIN!'
+  else if (playerTotalSum > dealerTotalSum) {
+    text_update.innerText = "You win!"
+    resetGame();
   }
-  else if (dealerSum === playerSum) {
-    textUpdate.textContent = 'TIE!'
-  }
-  else if (dealerSum < playerSum) {
-    textUpdate.textContent = 'YOU WIN!'
-  }
-  else if (dealerSum > playerSum) {
-    textUpdate.textContent = 'YOU LOSE!'
+  else if (playerTotalSum < dealerTotalSum) {
+    text_update.innerText = "You lose!"
+    resetGame();
   }
 }
 
+function hitCard(array, slot) {
+  let card = deck.pop();
+  array.push(card);
+  showHitCard = hit_card_element.appendChild(card.getHTML());
+  showHitCard.classList.add('card-hit');
+  slot.appendChild(showHitCard);
+}
 
+function addCards(array) {
+  return array.reduce(getSum, 0);
+}
 
-/* GAME UPDATES FUNCTIONS */
-function gameOver() {
-  playerBetButton.style.removeProperty("visibility");
-  playerHitButton.style.visibility = "hidden";
-  playerStandButton.style.visibility = "hidden";
-  playerBetButton.innerText = "RESTART";
-  dealerHiddenCard.remove();
-  dealerSlot.append(hiddenCard.getHTML());//to show computer hidden card once game is over or when player stand
-  playerBetButton.addEventListener('click', () => {
-    clear();
+function getSum(total, item) {
+  return total + CARD_VALUE_MAP[item.value];
+}
+
+function resetGame(array1, array2) {
+  array1 = [];
+  array2 = [];
+  p_bet_btn.style.removeProperty('visibility');
+  p_hit_btn.style.visibility = 'hidden';
+  p_stand_btn.style.visibility = 'hidden';
+  p_bet_btn.innerText = 'RESTART';
+  p_bet_btn.addEventListener('click', () => {
+    clearHTML();
     startGame();
   }, { once: true })
 }
 
-function clear() {
-  let elements = document.getElementsByClassName("card-hit");
-  while (elements.length > 0) {
-    elements[0].parentNode.removeChild(elements[0]);
-  }
-  elements = document.getElementsByClassName("hello");
-  while (elements.length > 0) {
-    elements[0].parentNode.removeChild(elements[0]);
-  }
-  playerCardOne.classList.add('card-hide');
-  playerCardTwo.classList.add('card-hide');
-  dealerCard.classList.add('card-hide');
-  dealerHiddenCard.classList.add('card-hide');
+/** UI UPDATES FUNCTIONS */
+function show_back_card() {
+  dealer_slot.appendChild(dealerOne_back_card);
+  dealer_slot.appendChild(dealerTwo_back_card);
+  player_slot.appendChild(playerOne_back_card);
+  player_slot.appendChild(playerTwo_back_card);
 }
 
-// function clear() {
-//   let elements = document.getElementsByClassName("card-hit");
-//   while (elements.length > 0) {
-//     elements[0].parentNode.removeChild(elements[0]);
-//   }
-//   elements = document.getElementsByClassName("hello");
-//   while (elements.length > 0) {
-//     elements[0].parentNode.removeChild(elements[0]);
-//   }
-//   playerCardOne.classList.add('card-hide');
-//   playerCardTwo.classList.add('card-hide');
-//   dealerCard.classList.add('card-hide');
-//   dealerHiddenCard.classList.add('card-hide');
-// }
+function remove_back_card() {
+  dealer_slot.removeChild(dealerOne_back_card);
+  dealer_slot.removeChild(dealerTwo_back_card);
+  player_slot.removeChild(playerOne_back_card);
+  player_slot.removeChild(playerTwo_back_card);
+}
 
+function hide_btn(btn) {
+  btn.style.visibility = "hidden";
+}
 
+function show_btn(btn) {
+  btn.style.removeProperty("visibility");
+}
+
+function textUpdate(sum, text) {
+  text.innerText = `${sum}`;
+}
+
+function resetTexts() {
+  text_update.textContent = ``;
+  p_text_update.textContent = `You`;
+  dealer_text_update.textContent = `Dealer`;
+  p_bet_btn.innerText = "START";
+}
+
+function clearHTML() {
+  let elements = document.getElementsByClassName("innerHtmlCard");
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
+
+  let hit_card_elements = document.getElementsByClassName("card-hit");
+  while (hit_card_elements.length > 0) {
+    hit_card_elements[0].parentNode.removeChild(hit_card_elements[0]);
+  }
+}

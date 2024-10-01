@@ -38,7 +38,7 @@ const VALUES = [
   "10",
   "J",
   "Q",
-  "K"
+  "K",
 ]
 
 
@@ -81,11 +81,18 @@ class Card {
     return this.suit === '♣' || this.suit === '♠' ? 'black' : 'red'
   }
 
+  /**This is a function inside the class Card to create the html div to show to the user 
+   * from
+   * <div class = "card red" data-value="9 ♥" >
+   *     ♥
+   * </div>
+  */
+
   getHTML() {
     const cardDiv = document.createElement('div')
     cardDiv.innerText = this.suit
     cardDiv.classList.add("card", this.color)
-    cardDiv.classList.add("hello")
+    cardDiv.classList.add("innerHtmlCard")
     cardDiv.dataset.value = `${this.value} ${this.suit}`
     return cardDiv
   }

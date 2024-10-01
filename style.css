@@ -13,6 +13,12 @@ body {
 h1 {
   text-align: center;
   color: #199465;
+  font-size: 3.5rem;
+}
+
+h2 {
+  color: #137550;
+  font-size: 1.5rem;
 }
 
 .container {
@@ -24,6 +30,7 @@ h1 {
   padding-top: 1rem;
   padding-bottom: 2rem;
   border-radius: 5% 5% 50% 50%;
+  border: 3px solid rgba(0, 0, 0, 0.288);
 }
 
 .playerMoveContainer {
@@ -125,6 +132,9 @@ h1 {
   background-color: rgb(182, 66, 66);
 }
 
+.hidden {
+  display: none;
+}
 
 .card {
   background-color: #fff;
@@ -162,7 +172,7 @@ h1 {
   position: relative;
   height: 12rem;
   width: 8rem;
-  border: 1px solid black;
+  border: 3px solid black;
   border-radius: 1rem;
   display: flex;
   justify-content: center;
