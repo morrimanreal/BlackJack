@@ -60,13 +60,11 @@ function HAND_IN_PLAY() {
   player_card_array = [];
   dealInitialCards(dealer_card_array, dealer_slot);
   const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
-  console.log(hidden_card);
   hidden_card.style.display = 'none';
   dealer_slot.appendChild(dealerTwo_back_card);
 
   /**DEALS FIRST TWO PLAYER CARDS*/
   dealInitialCards(player_card_array, player_slot);
-  console.log(player_card_array);
   playerTotalSum = addCards(player_card_array);
   p_text_update.innerText = `Player: ${playerTotalSum}`;
 
@@ -142,6 +140,10 @@ function playerHit() {
   p_text_update.innerText = `Player: ${playerTotalSum}`;
 
   if (playerTotalSum > 21) {
+    const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
+    dealer_slot.removeChild(dealerTwo_back_card);
+    console.log(hidden_card);
+    hidden_card.style.display = 'flex';
     text_update.innerText = "You bust!"
     resetGame();
   }
