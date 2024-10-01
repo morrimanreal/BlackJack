@@ -40,8 +40,7 @@ dealerTwo_back_card.classList.add('card-hide');
 let dealer_card_array, player_card_array;
 let deck;
 let showHitCard;
-let totalSum = 0,
-  dealerTotalSum,
+let dealerTotalSum,
   playerTotalSum;
 
 /** FIRST STEPS TO RUN THE GAME */
@@ -62,6 +61,7 @@ function HAND_IN_PLAY() {
   const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
   hidden_card.style.display = 'none';
   dealer_slot.appendChild(dealerTwo_back_card);
+  dealerTotalSum = addCards(dealer_card_array);
 
   /**DEALS FIRST TWO PLAYER CARDS*/
   dealInitialCards(player_card_array, player_slot);
@@ -107,25 +107,23 @@ function aceCount(array) {
 
 }
 
-function checkBlackJack(player_array, dealer_array) {
-  let dealer_total = dealer_array.reduce(getSum, 0);
-  let player_total = player_array.reduce(getSum, 0);
+function checkBlackJack() {
 
-  if (player_total == 21 || dealer_total == 21) {
+  if (playerTotalSum == 21 || dealerTotalSum == 21) {
     const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
     dealer_slot.removeChild(dealerTwo_back_card);
     console.log(hidden_card);
     hidden_card.style.display = 'flex';
     // check blackJack
-    if (player_total === dealer_total) {
+    if (playerTotalSum === dealerTotalSum) {
       text_update.textContent = `Tie!`;
-      resetGame(player_array, dealer_array);
-    } else if (player_total > dealer_total) {
+      resetGame();
+    } else if (playerTotalSum > dealerTotalSum) {
       text_update.textContent = `Player Blackjack!`;
-      resetGame(player_array, dealer_array);
-    } else if (player_total < dealer_total) {
+      resetGame();
+    } else if (playerTotalSum < dealerTotalSum) {
       text_update.textContent = `Dealer Blackjack!`;
-      resetGame(player_array, dealer_array);
+      resetGame();
     }
   } else {
     return;
@@ -144,7 +142,7 @@ function playerHit() {
     dealer_slot.removeChild(dealerTwo_back_card);
     console.log(hidden_card);
     hidden_card.style.display = 'flex';
-    text_update.innerText = "You bust!"
+    text_update.innerText = "Player bust!"
     resetGame();
   }
 }
@@ -181,11 +179,11 @@ function compareTotal() {
     resetGame();
   }
   else if (playerTotalSum > dealerTotalSum) {
-    text_update.innerText = "You win!"
+    text_update.innerText = "Player win!"
     resetGame();
   }
   else if (playerTotalSum < dealerTotalSum) {
-    text_update.innerText = "You lose!"
+    text_update.innerText = "Player lose!"
     resetGame();
   }
 }
@@ -206,9 +204,9 @@ function getSum(total, item) {
   return total + CARD_VALUE_MAP[item.value];
 }
 
-function resetGame(array1, array2) {
-  array1 = [];
-  array2 = [];
+function resetGame() {
+  dealer_card_array = [];
+  player_card_array = [];
   p_bet_btn.style.removeProperty('visibility');
   p_hit_btn.style.visibility = 'hidden';
   p_stand_btn.style.visibility = 'hidden';
@@ -240,10 +238,6 @@ function hide_btn(btn) {
 
 function show_btn(btn) {
   btn.style.removeProperty("visibility");
-}
-
-function textUpdate(sum, text) {
-  text.innerText = `${sum}`;
 }
 
 function resetTexts() {
