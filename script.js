@@ -1,4 +1,5 @@
 import Deck from './deck.js'
+
 let CARD_VALUE_MAP = {
   "2": 2,
   "3": 3,
@@ -78,10 +79,10 @@ function HAND_IN_PLAY() {
 function newGame() {
   deck = new Deck();
   deck.shuffle();
-  console.log(deck);
 }
 
 function startGame() {
+  console.log(deck);
   /**UI UPDATES EVERY START OF THE GAME */
   show_back_card();
   resetTexts();
@@ -108,7 +109,6 @@ function aceCount(array) {
 }
 
 function checkBlackJack() {
-
   if (playerTotalSum == 21 || dealerTotalSum == 21) {
     const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
     dealer_slot.removeChild(dealerTwo_back_card);
@@ -128,8 +128,6 @@ function checkBlackJack() {
   } else {
     return;
   }
-  console.log(dealer_total);
-  console.log(player_total);
 }
 
 function playerHit() {
@@ -144,6 +142,8 @@ function playerHit() {
     hidden_card.style.display = 'flex';
     text_update.innerText = "Player bust!"
     resetGame();
+  } else if (playerTotalSum === 21) {
+    playerStand();
   }
 }
 
@@ -152,7 +152,6 @@ function playerStand() {
   hide_btn(p_hit_btn);
 
   const hidden_card = dealer_slot.querySelector('div:nth-child(2)');
-  console.log(hidden_card);
   hidden_card.style.display = 'flex';
   dealer_slot.removeChild(dealerTwo_back_card);
   dealerTotalSum = addCards(dealer_card_array);
